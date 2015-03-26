@@ -462,9 +462,14 @@ void DummySink::afterGettingFrame(unsigned frameSize, unsigned numTruncatedBytes
     unsigned numSPropRecords;
     SPropRecord* sPropRecords = parseSPropParameterSets(fSubsession.fmtp_spropparametersets(), numSPropRecords);
     for(unsigned i=0;i<numSPropRecords;i++) {
-      PyObject *result = PyEval_CallFunction(frameCallback, "sy#iii", fSubsession.codecName(), sPropRecords[i].sPropBytes, sPropRecords[i].sPropLength, -1, -1, -1);
+    #if PY_MAJOR_VERSION >= 3
+    #define _FMT_STR1 "sy#iii"
+    #else
+    #define _FMT_STR1 "ss#iii"
+    #endif
+      PyObject *result = PyEval_CallFunction(frameCallback, _FMT_STR1, fSubsession.codecName(), sPropRecords[i].sPropBytes, sPropRecords[i].sPropLength, -1, -1, -1);
       if (result == NULL) {
-        fprintf(stderr, "Exception in RTSP callback:\n");
+        fprintf(stderr, "Exception in RTSP callback '%s' %s:\n", _FMT_STR1, __TIME__);
         PyErr_PrintEx(1);
         fSource->stopGettingFrames();
         env->taskScheduler().scheduleDelayedTask(0, (TaskFunc*)shutdownStream, fRTSPClient);
@@ -479,9 +484,14 @@ void DummySink::afterGettingFrame(unsigned frameSize, unsigned numTruncatedBytes
 
   // TODO: can we somehow avoid ... making a full copy here:
   //printf("%d bytes\n", frameSize);fflush(stdout);
-  PyObject *result = PyEval_CallFunction(frameCallback, "sy#llI", fSubsession.codecName(), fReceiveBuffer, frameSize, presentationTime.tv_sec, presentationTime.tv_usec, durationInUS);
+  #if PY_MAJOR_VERSION >= 3
+  #define _FMT_STR2 "sy#llI"
+  #else
+  #define _FMT_STR2 "ss#lli"
+  #endif
+  PyObject *result = PyEval_CallFunction(frameCallback, _FMT_STR2, fSubsession.codecName(), fReceiveBuffer, frameSize, presentationTime.tv_sec, presentationTime.tv_usec, durationInUS);
   if (result == NULL) {
-    fprintf(stderr, "Exception in RTSP callback:");
+    fprintf(stderr, "Exception in RTSP callback '%s' %s:\n", _FMT_STR2, __TIME__);
     PyErr_PrintEx(1);
     fSource->stopGettingFrames();
     env->taskScheduler().scheduleDelayedTask(0, (TaskFunc*)shutdownStream, fRTSPClient);
@@ -622,10 +632,8 @@ PyInit_live555(void)
 #else
 
 PyMODINIT_FUNC
-PyInit_live555(void)
+initlive555(void)
 {
-  PyObject *m;
-
   PyObject *module = Py_InitModule3("live555", moduleMethods,
     "A simple wrapper around live555");
   if (!module)

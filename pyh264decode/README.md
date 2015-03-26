@@ -12,9 +12,8 @@ This module is currently only tested with Python 2.7.
 You'll need ffmpeg (tested with 2.4.2) or libav with H.264 support installed.
 
 ```bash
-$ python setup.py build
-$ sudo python setup.py install
-$ pydoc h264decode
+$ python2 setup.py build
+$ sudo python2 setup.py install
 ```
 
 ## Usage

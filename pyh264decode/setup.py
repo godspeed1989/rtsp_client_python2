@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 from distutils.core import setup, Extension
 
@@ -9,5 +9,6 @@ setup(
 	ext_modules = [Extension(	"h264decode",
 								sources=["yuvframe.c", "decoder.c", "h264decode.c"],
 								libraries=["avcodec"],
+								extra_compile_args = ['-Wall'],
 								library_dirs=["/usr/local/lib", "/usr/lib"])]
 )

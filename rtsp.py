@@ -1,18 +1,19 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 import time
 import sys
-import live555
 import threading
+import live555
+import h264decode
 
 # Shows how to use live555 module to pull frames from an RTSP/RTP
 # source.  Run this (likely first customizing the URL below:
 
-# Example: python3 example.py [192.168.0.88] [8554] [5]
+# Example: ./rtsp.py 192.168.0.199  8554  5
 if len(sys.argv) < 4:
-    print()
+    print('')
     print('Usage: python2 example.py [cameraIP] [port] [nframe]')
-    print()
+    print('')
     sys.exit(1)
 
 cameraIP = sys.argv[1]
@@ -30,7 +31,17 @@ url = 'rtsp://%s:%s/' % (cameraIP, port)
 def decodeFrame(receiveBuf):
     #av_packet_from_data(m_packet, receiveBuf, len(receiveBuf))
     #avcodec_decode_video2(codecCtx, frame, &got_picture, m_packet)
-    print()
+    global decoder
+    print ''
+    if frame_i == 0:
+        avcC = receiveBuf
+        #TODO get avcC to decode
+        decoder = h264decode.Decoder(avcC)
+    else:
+        yuv = decoder.decodeFrame(receiveBuf)
+        print "Read frame of %dx%d pixels" % (yuv.width, yuv.height)
+        # e.g. rendering with pygame:
+        overlay.display((yuv.y, yuv.u, yuv.v))
 
 fOut = open('out.264', 'wb')
 

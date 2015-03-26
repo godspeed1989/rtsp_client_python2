@@ -5,10 +5,6 @@ Media APIs, so that you can load video frames.  It only wraps a tiny,
 tiny subset of all of Live555's APIs, specifically the APIs necessary
 to pull frames via RTSP/RTP from an IP camera.
 
-I've only tested on Linux with Python 3, with the surprisingly
-excellent Lorex LNB2151/LNB2153 cameras, with H264 video.  Please
-report back if you succeed with other cameras.
-
 INSTRUCTIONS:
 
   * First, download and compile/install the Live555 library from
@@ -24,15 +20,8 @@ INSTRUCTIONS:
     step; otherwise, edit INSTALL_DIR in setup.py to point the live
     headers and libraries.
 
-  * Build the python bindings: python3 setup.py build; make sure
+  * Build the python bindings: `python setup.py build` make sure
     there are no errors.
 
-  * Copy the resulting .so (from build/lib/*.so) to somewhere onto
-    your PYTHONPATH.
+  * Install bindings: `sudo python2 setup.py install`
 
-  * Run the example
-
-      python3 example.py 10.17.4.118 1 10 out.264
-    
-    That will record 10 seconds of H264 video from the camera at
-    10.17.4.118, channel 1, saving it to the file out.264.
